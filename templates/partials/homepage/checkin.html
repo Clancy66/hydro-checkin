@@ -1,0 +1,262 @@
+<style>
+    /* 容器微调 */
+    .checkin-wrapper { padding: 16px; }
+
+    /* 1. 顶部运势区域 */
+    .ck-header { text-align: center; margin-bottom: 20px; }
+    
+    /* 运势大字 - 保持巨大 */
+    .ck-fortune-title {
+        font-size: 52px; 
+        font-weight: 900; 
+        margin: 5px 0 8px;
+        letter-spacing: 2px;
+        line-height: 1.1;
+    }
+
+    /* 统计数据胶囊 */
+    .ck-stats {
+        display: inline-flex;
+        gap: 8px;
+        font-size: 12px;
+        color: #666;
+        background: #f1f3f5;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+    .ck-stats span { font-weight: bold; color: #333; }
+
+    /* 2. 核心双列布局 */
+    .ck-grid-row {
+        display: flex;
+        gap: 10px; /* 左右卡片间距 */
+    }
+
+    /* 单个卡片样式 */
+    .ck-card {
+        flex: 1; /* 左右各占 50% */
+        border-radius: 12px;
+        padding: 15px 10px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        
+        /* 【关键】确保卡片不裁切溢出的气泡 */
+        overflow: visible !important; 
+        position: relative;
+    }
+
+    /* 左侧图标区 */
+    .ck-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 900;
+        margin-right: 10px;
+        flex-shrink: 0; /* 防止图标被压缩 */
+        background: #fff;
+    }
+
+    /* 右侧文字区 */
+    .ck-text-box {
+        display: flex;
+        flex-direction: column;
+        gap: 6px; /* 两行文字的间距 */
+        justify-content: center;
+        width: 100%; /* 占满剩余空间 */
+    }
+
+    /* --- 关键修改：文字项容器 --- */
+    .ck-text-item {
+        font-size: 13px;
+        color: #444;
+        line-height: 1.4;
+        font-weight: 500;
+        position: relative; /* 【关键】作为气泡的定位父级 */
+        cursor: help; /* 鼠标放上去显示问号，提示有解释 */
+        display: inline-block; /* 确保定位基准准确 */
+        width: fit-content; /* 宽度自适应内容 */
+    }
+
+    /* --- 新增：水平分割线样式 --- */
+    .ck-divider {
+        width: 100%;
+        height: 1px;
+        background-color: rgba(0,0,0,0.08); 
+        margin: 2px 0; 
+    }
+
+    /* --- 颜色主题 --- */
+    
+    /* 宜 - 绿色系 */
+    .theme-yi {
+        background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
+        border: 1px solid #b2f5ea;
+    }
+    .theme-yi .ck-icon-box {
+        color: #00b894;
+        border: 2px solid #00b894;
+    }
+
+    /* 忌 - 红色系 */
+    .theme-ji {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
+        border: 1px solid #fed7d7;
+    }
+    .theme-ji .ck-icon-box {
+        color: #e17055;
+        border: 2px solid #e17055;
+    }
+
+    /* 登录按钮美化 */
+    .ck-login-btn {
+        margin-top: 10px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    /* --- 气泡 Tooltip 样式修正 (向上版) --- */
+    .ck-text-item-tooltip {
+        /* 1. 绝对定位 */
+        position: absolute !important;
+        
+        /* 2. 定位到文字的上方 (bottom: 100%)，并留出 8px 间隙 */
+        bottom: 100% !important;
+        
+        /* 3. 水平居中 */
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+
+        /* 外观样式 */
+        background: #1f2937 !important;
+        color: #fff !important;
+        padding: 6px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important; /* 不换行 */
+        pointer-events: none !important;
+        z-index: 99999 !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        /* 默认隐藏 */
+        opacity: 0 !important;
+        visibility: hidden !important;
+        
+        /* 添加一点过渡动画 */
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    /* 气泡的小箭头 (向上版) */
+    .ck-text-item-tooltip::after {
+        content: "";
+        position: absolute !important;
+        
+        /* 箭头位于气泡底部中间 */
+        top: 85% !important; 
+        left: 50% !important;
+        
+        /* 向左上移动自身的一半以实现居中 */
+        transform: translateX(-50%) rotate(45deg);
+        
+        width: 8px;
+        height: 8px;
+        background: #1f2937 !important;
+        z-index: 99998; /* 放在气泡背景后面一点点 */
+    }
+
+    /* hover 时显示气泡 */
+    .ck-text-item:hover .ck-text-item-tooltip {
+        opacity: 1 !important;
+        visibility: visible !important;
+        /* 稍微向上浮动一点的动效 */
+        bottom: calc(100% + 4px) !important; 
+    }
+</style>
+
+<div class="section side checkin-wrapper">
+    <div class="section__header" style="border-bottom: none; padding: 0;">
+        <h1 class="section__title">{{UserContext.uname}} 今日运势</h1>
+    </div>
+    
+    <div class="section__body typo" style="padding: 0;">
+        {% if UserContext._id != 0 %}
+            {% if payload.checkin.date === payload.today %}
+                <!-- 1. 顶部：运势大字 + 统计数据 -->
+                <div class="ck-header">
+                    <div class="ck-fortune-title" style="color: {{ payload.type[payload.checkin.type].color }};">
+                       § {{ payload.type[payload.checkin.type].text }} §
+                    </div>
+                    <div class="ck-stats">
+                        连续打卡 <span>{{ payload.checkin.count }}</span> 天 &nbsp;|&nbsp; 累计打卡 <span>{{ payload.checkin.total }}</span> 天
+                    </div>
+                </div>
+
+                <!-- 2. 下部：左右分栏 (Flex布局) -->
+                <div class="ck-grid-row">
+                    
+                    <!-- 左侧：宜 -->
+                    <div class="ck-card theme-yi">
+                        <!-- 左侧图标 -->
+                        <div class="ck-icon-box">宜</div>
+                        <!-- 右侧两行文字 -->
+                        {% set pos1 = payload.checkin.content[0] %}
+                        {% set pos2 = payload.checkin.content[1] %}
+                        <div class="ck-text-box">
+                            <div class="ck-text-item">
+                                {{ pos1.split('.')[0] }}
+                                <div class="ck-text-item-tooltip">{{ pos1.split('.')[1] }}</div>
+                            </div>
+                            <!-- 分割线 -->
+                            <div class="ck-divider"></div>
+                            <div class="ck-text-item">
+                                {{ pos2.split('.')[0] }}
+                                <div class="ck-text-item-tooltip">{{ pos2.split('.')[1] }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：忌 -->
+                    <div class="ck-card theme-ji">
+                        <!-- 左侧图标 -->
+                        <div class="ck-icon-box">忌</div>
+                        <!-- 右侧两行文字 -->
+                        {% set pos3 = payload.checkin.content[2] %}
+                        {% set pos4 = payload.checkin.content[3] %}
+                        <div class="ck-text-box">
+                            <div class="ck-text-item">
+                                {{ pos3.split('.')[0] }}
+                                <div class="ck-text-item-tooltip">{{ pos3.split('.')[1] }}</div>
+                            </div>
+                            <!-- 分割线 -->
+                            <div class="ck-divider"></div>
+                            <div class="ck-text-item">
+                                {{ pos4.split('.')[0] }}
+                                <div class="ck-text-item-tooltip">{{ pos4.split('.')[1] }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            {% else %}
+                <!-- 未签到状态 -->
+                <div style="text-align: center; padding: 20px 0;">
+                    <p style="color:#666; margin-bottom:15px;">今日运势尚未揭晓</p>
+                    <a href="/checkin" class="button primary ck-login-btn">
+                        <span class="icon icon-feeling-lucky"></span> 抽取今日运势
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- 未登录状态 -->
+            <div style="text-align: center; padding: 30px 0; color: #888;">
+                <span class="icon icon-user" style="font-size: 24px; display:block; margin-bottom:10px;"></span>
+                登录后即可查看专属运势
+            </div>
+        {% endif %}
+    </div>
+</div>
