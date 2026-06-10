@@ -58,7 +58,6 @@
         font-weight: 900;
         margin-right: 10px;
         flex-shrink: 0; /* 防止图标被压缩 */
-        background: #fff;
     }
 
     /* 右侧文字区 */
@@ -82,6 +81,10 @@
         width: fit-content; /* 宽度自适应内容 */
     }
 
+    html[data-mantine-color-scheme="dark"] .ck-text-box .ck-text-item {
+        color: white !important;
+    }
+
     /* --- 新增：水平分割线样式 --- */
     .ck-divider {
         width: 100%;
@@ -95,7 +98,7 @@
     /* 宜 - 绿色系 */
     .theme-yi {
         background: linear-gradient(135deg, #e6fffa 0%, #ebf8ff 100%);
-        border: 1px solid #b2f5ea;
+        border: 2px solid #b2f5ea;
     }
     .theme-yi .ck-icon-box {
         color: #00b894;
@@ -105,11 +108,25 @@
     /* 忌 - 红色系 */
     .theme-ji {
         background: linear-gradient(135deg, #fff5f5 0%, #ffeef0 100%);
-        border: 1px solid #fed7d7;
+        border: 2px solid #fed7d7;
     }
     .theme-ji .ck-icon-box {
         color: #e17055;
         border: 2px solid #e17055;
+    }
+
+    /* 🌟 加入夜间模式适配 */
+    html[data-mantine-color-scheme="dark"] .theme-yi {
+        background: linear-gradient(
+            135deg, 
+            rgba(230, 255, 250, 0.15) 0%,   /* #e6fffa 的 15% 透明度 */
+            rgba(235, 248, 255, 0.15) 100%   /* #ebf8ff 的 15% 透明度 */
+        ) !important;
+    }
+        
+    /* 红色：换用带有高级感的珊瑚红/淡粉红 */
+    html[data-mantine-color-scheme="dark"] .theme-ji {
+        background: linear-gradient(135deg, rgba(255, 245, 245, 0.15) 0%, rgba(255, 238, 240, 0.15) 100%) !important;
     }
 
     /* 登录按钮美化 */
