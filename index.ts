@@ -183,7 +183,7 @@ async function getCheckin(payload, handler) {
             payload.checkin.date = moment(payload.checkin.date).format("YYYY-MM-DD");
         }
     }
-
+    console.log(payload);
     return payload;
 }
 
