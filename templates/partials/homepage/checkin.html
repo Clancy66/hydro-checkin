@@ -231,6 +231,11 @@
                     <div class="ck-fortune-title" style="color: {{ payload.type[payload.checkin.type].color }};">
                        § {{ payload.type[payload.checkin.type].text }} §
                     </div>
+                    {% if payload.checkin.checkinReward !== 0 %}
+                    <div class="ck-stats" style="margin-top: 6px; color: orange;">
+                        今日掉落 {{ payload.checkin.checkinReward }} 金币
+                    </div>
+                    {% endif %}
                     <div class="ck-stats">
                         连续打卡 <span>{{ payload.checkin.count }}</span> 天 &nbsp;|&nbsp; 累计打卡 <span>{{ payload.checkin.total }}</span> 天
                     </div>

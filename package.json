@@ -1,6 +1,6 @@
 {
   "name": "checkin",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "打卡签到插件",
   "main": "index.ts",
   "author": "Clancy",

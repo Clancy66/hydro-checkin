@@ -10,6 +10,7 @@ interface CheckinDoc {
     total: number,
     type: number,
     content: string[],
+    checkinReward: number
 }
 
 declare module 'hydrooj' {
@@ -28,12 +29,12 @@ class CheckinModel {
         return await CheckinModel.coll.findOne({ uid });
     }
 
-    static async add(uid: number, date: string, count: number, total: number, type: number, content: string[]) {
+    static async add(uid: number, date: string, count: number, total: number, type: number, content: string[], checkinReward: number) {
         const ddoc = await CheckinModel.coll.findOne({ uid });
         if (ddoc) {
             const result = await CheckinModel.coll.findOneAndUpdate(
                 { uid },
-                { $set: { date, count, total, type, content } }
+                { $set: { date, count, total, type, content, checkinReward } }
             );
             return result;
         }
@@ -44,7 +45,8 @@ class CheckinModel {
                 count,
                 total,
                 type,
-                content
+                content,
+                checkinReward
             });
 
             return result;    
@@ -149,6 +151,41 @@ class CheckinHandler extends Handler {
             content.push(str);
         }
 
+        const checkinReward = Math.ceil(Math.random() * 3);
+        // 尝试掉落金币
+        try {
+            const coins = await db.collection('coins').findOne({uid});
+            
+            if (!coins) {
+                await db.collection('coins').insertOne({
+                    uid: uid,
+                    total: checkinReward,
+                    checkin: checkinReward,
+                    stages: 0,
+                    problems: 0,
+                    bonus: 0
+                })
+            }
+            else {
+                await db.collection('coins').updateOne(
+                    {uid: uid},
+                    {
+                        $inc: { total: checkinReward, checkin: checkinReward }
+                })
+            }
+
+            await db.collection('bills').insertOne({
+                createAt: new Date(),
+                rootId: uid,
+                uid: uid,
+                goodsId: "",
+                coins: checkinReward,
+                content: "[打卡奖励] " + today,
+                check: true
+            })
+        }
+        catch (error: any) { /* 忽略 */ }
+
         let doc = await CheckinModel.getByUid(uid);
 
         if (doc) {
@@ -159,11 +196,11 @@ class CheckinHandler extends Handler {
                 if (moment(doc.date).add(1, 'day').isSame(moment(today), 'day')) {
                     cnt = (doc.count || 0) + 1;
                 }
-                await CheckinModel.add(uid, today, cnt, total, type, content);
+                await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
             }
         }
         else {
-            await CheckinModel.add(uid, today, cnt, total, type, content);
+            await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
         }
 
         this.response.redirect = '/';
@@ -183,7 +220,7 @@ async function getCheckin(payload, handler) {
             payload.checkin.date = moment(payload.checkin.date).format("YYYY-MM-DD");
         }
     }
-    console.log(payload);
+
     return payload;
 }
 
