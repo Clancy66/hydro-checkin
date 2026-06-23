@@ -181,7 +181,7 @@ class CheckinHandler extends Handler {
                 goodsId: "",
                 coins: checkinReward,
                 content: "[打卡奖励] " + today,
-                check: true
+                check: 2
             })
         }
         catch (error: any) { /* 忽略 */ }
@@ -232,14 +232,14 @@ HomeHandler.prototype.getCheckin = async function (domainId, payload) {
 
 // 配置项及路由
 export async function apply(ctx: Context) {
-    // 简单的数据迁移逻辑（仅首次升级时运行）
+    // 简单的数据迁移逻辑（仅首次安装时运行，注意重启系统也会再次运行）
     const migrated = await db.collection('system').findOne({ _id: 'checkin_migrated' });
     if (!migrated) {
         const users = await db.collection('user').find({ checkin_time: { $exists: true } }).toArray();
         for (const user of users) {
             await checkinCollection.updateOne(
                 { uid: user._id },
-                { $set: { 
+                { $set: {
                     date: user.checkin_time,
                     count: user.checkin_cnt_now, 
                     total: user.checkin_cnt_all,
@@ -248,7 +248,9 @@ export async function apply(ctx: Context) {
                 { upsert: true }
             );
         }
-        console.log('[Checkin] 历史签到数据迁移完成！');
+        const currentLog = '[Checkin] 历史签到数据迁移完成！';
+        await db.collection('system').insertOne({ _id: 'checkin_migrated', value: currentLog });
+        console.log(currentLog);
     }
 
     ctx.Route('checkin', '/checkin', CheckinHandler, PRIV.PRIV_USER_PROFILE);

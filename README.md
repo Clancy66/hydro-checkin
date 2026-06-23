@@ -43,6 +43,7 @@
 |`total`|`number`|总计签到次数|
 |`type`|`number`|最新一次签到主运势 $0\sim 6$|
 |`content`|`string[]`|随机产生的四个事项，前两个是宜，后两个是忌|
+|`checkinReward`|`number`|最新一次签到随机的金币数|
 
 ## 部分截图
 
