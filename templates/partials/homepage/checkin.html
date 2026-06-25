@@ -231,7 +231,7 @@
                     <div class="ck-fortune-title" style="color: {{ payload.type[payload.checkin.type].color }};">
                        § {{ payload.type[payload.checkin.type].text }} §
                     </div>
-                    {% if payload.checkin.checkinReward !== 0 %}
+                    {% if payload.coins === true %}
                     <div class="ck-stats" style="margin-top: 6px; color: orange;">
                         今日掉落 {{ payload.checkin.checkinReward }} 金币
                     </div>
@@ -291,7 +291,11 @@
             {% else %}
                 <!-- 未签到状态 -->
                 <div style="text-align: center; padding: 20px 0;">
-                    <p style="color:#666; margin-bottom:15px;">今日运势尚未揭晓</p>
+                    <p style="color:#666; margin-bottom:5px;">今日运势尚未揭晓</p>
+                    {% if payload.coins === true %}
+                    <div style="color:#666; margin-bottom:5px;">签到可随机掉落 1~3 枚金币</div>
+                    <div style="color:#666; margin-bottom:15px;">连续签到 7 天以上每天随机掉落 4~6 金币</div>
+                    {% endif %}
                     <a href="/checkin" class="ck-login-btn">
                         <span class="icon icon-feeling-lucky"></span> 抽取今日运势
                     </a>

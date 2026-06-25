@@ -151,7 +151,30 @@ class CheckinHandler extends Handler {
             content.push(str);
         }
 
-        const checkinReward = Math.ceil(Math.random() * 3);
+        let checkinReward = Math.ceil(Math.random() * 3);
+        let doc = await CheckinModel.getByUid(uid);
+
+        if (doc) {
+            if (!moment(today).isSame(moment(doc.date), 'day')) {
+                total = (doc.total || 0) + 1;
+
+                // 计算连续签到天数
+                if (moment(doc.date).add(1, 'day').isSame(moment(today), 'day')) {
+                    cnt = (doc.count || 0) + 1;
+                }
+
+                // 连续签到 7 天，每天固定额外奖励 3 个金币
+                if (cnt >= 7) {
+                    checkinReward = checkinReward + 3;
+                }
+
+                await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
+            }
+        }
+        else {
+            await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
+        }
+
         // 尝试掉落金币
         try {
             const coins = await db.collection('coins').findOne({uid});
@@ -185,23 +208,6 @@ class CheckinHandler extends Handler {
             })
         }
         catch (error: any) { /* 忽略 */ }
-
-        let doc = await CheckinModel.getByUid(uid);
-
-        if (doc) {
-            if (!moment(today).isSame(moment(doc.date), 'day')) {
-                total = (doc.total || 0) + 1;
-
-                // 计算连续签到天数
-                if (moment(doc.date).add(1, 'day').isSame(moment(today), 'day')) {
-                    cnt = (doc.count || 0) + 1;
-                }
-                await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
-            }
-        }
-        else {
-            await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
-        }
 
         this.response.redirect = '/';
     }
