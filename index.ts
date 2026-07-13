@@ -196,16 +196,6 @@ class CheckinHandler extends Handler {
                         $inc: { total: checkinReward, checkin: checkinReward }
                 })
             }
-
-            await db.collection('bills').insertOne({
-                createAt: new Date(),
-                rootId: uid,
-                uid: uid,
-                goodsId: "",
-                coins: checkinReward,
-                content: "[打卡奖励] " + today,
-                check: 2
-            })
         }
         catch (error: any) { /* 忽略 */ }
 
