@@ -167,6 +167,12 @@ class CheckinHandler extends Handler {
                 if (cnt >= 7) {
                     checkinReward = checkinReward + 3;
                 }
+                if (cnt >= 30) {
+                    checkinReward = checkinReward + 3;
+                }
+                if (cnt >= 180) {
+                    checkinReward = checkinReward + 10;
+                }
 
                 await CheckinModel.add(uid, today, cnt, total, type, content, checkinReward);
             }
